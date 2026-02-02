@@ -1,0 +1,43 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #fff3e0;
+  text-align: center;
+}
+
+h1 {
+  color: #e65100;
+}
+
+.categorias button {
+  margin: 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  background: #ff9800;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.categorias button:hover {
+  background: #ef6c00;
+}
+
+.item {
+  background: white;
+  margin: 10px auto;
+  padding: 15px;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #ccc;
+}
+
+.item button {
+  margin-top: 10px;
+  background: green;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
