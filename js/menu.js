@@ -1,21 +1,16 @@
-async function openCategory(category) {
-  const { data, error } = await supabase
-    .from("menu")
-    .select("*")
-    .eq("categoria", category);
+const API_URL = 'https://humadero-api.onrender.com';
 
-  if (error) return alert(error.message);
-
-  const container = document.getElementById("items");
-  container.innerHTML = "";
-
-  data.forEach(item => {
-    container.innerHTML += `
-      <div>
-        <h3>${item.nombre}</h3>
-        <p>$${item.precio}</p>
-        <button onclick="addToCart(${item.id})">Agregar</button>
-      </div>
-    `;
-  });
-}
+fetch(`${API_URL}/menu`)
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    document.getElementById('menu').innerHTML =
+      data.map(item => `
+        <div>
+          <h3>${item.nombre}</h3>
+          <p>$${item.precio}</p>
+          <button>Agregar</button>
+        </div>
+      `).join('');
+  })
+  .catch(err => console.error(err));
