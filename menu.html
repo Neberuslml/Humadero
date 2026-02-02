@@ -2,14 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Menú - Humadero</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <title>Menú | Humadero</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h1>Menú</h1>
-<div id="menu"></div>
+  <h1>🔥 Menú Humadero 🔥</h1>
 
-<script src="js/menu.js"></script>
+  <div class="categorias">
+    <button onclick="mostrarCategoria('comida')">🍖 Comida</button>
+    <button onclick="mostrarCategoria('bebidas')">🥤 Bebidas</button>
+    <button onclick="mostrarCategoria('postres')">🍰 Postres</button>
+  </div>
+
+  <div id="menu"></div>
+
+  <h2>🛒 Carrito</h2>
+  <ul id="carrito"></ul>
+
+  <script src="js/menu.js"></script>
 </body>
 </html>
