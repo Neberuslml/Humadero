@@ -2,24 +2,87 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Menú | Humadero</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Menú Humadero</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .debug-info {
+      background: #f0f0f0;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>🔥 Menú Humadero 🔥</h1>
-
-  <div class="categorias">
-    <button onclick="mostrarCategoria('comida')">🍖 Comida</button>
-    <button onclick="mostrarCategoria('bebidas')">🥤 Bebidas</button>
-    <button onclick="mostrarCategoria('postres')">🍰 Postres</button>
+  <h1>🍔 Menú Humadero</h1>
+  
+  <div class="debug-info" id="debugInfo">
+    Cargando...
   </div>
 
-  <div id="menu"></div>
+  <button onclick="openCategory('comida')">🍔 Comida</button>
+  <button onclick="openCategory('bebidas')">🥤 Bebidas</button>
+  <button onclick="openCategory('postres')">🍰 Postres</button>
 
-  <h2>🛒 Carrito</h2>
-  <ul id="carrito"></ul>
+  <div id="items">
+    <!-- Los productos aparecerán aquí -->
+  </div>
 
+  <button onclick="goToCart()">🛒 Ver carrito</button>
+  
+  <div>
+    <h3>Prueba de conexión:</h3>
+    <button onclick="testAPI()">🔍 Probar API</button>
+    <button onclick="testSupabase()">🔍 Probar Supabase</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/menu.js"></script>
+  
+  <script>
+    // Funciones de prueba
+    async function testAPI() {
+      try {
+        const response = await fetch('https://humadero-backend.onrender.com/');
+        const data = await response.json();
+        document.getElementById('debugInfo').innerHTML = 
+          `✅ API OK: ${data.message}<br>URL: https://humadero-backend.onrender.com/`;
+      } catch (error) {
+        document.getElementById('debugInfo').innerHTML = 
+          `❌ API Error: ${error.message}`;
+      }
+    }
+    
+    async function testSupabase() {
+      try {
+        const { data, error } = await supabase
+          .from('menu')
+          .select('count', { count: 'exact', head: true });
+        
+        if (error) throw error;
+        
+        document.getElementById('debugInfo').innerHTML = 
+          `✅ Supabase conectado`;
+      } catch (error) {
+        document.getElementById('debugInfo').innerHTML = 
+          `❌ Supabase Error: ${error.message}`;
+      }
+    }
+    
+    function goToCart() {
+      alert('Carrito - en desarrollo');
+      // window.location.href = 'cart.html';
+    }
+    
+    // Iniciar pruebas automáticas
+    window.onload = function() {
+      testAPI();
+      // Cargar comida por defecto
+      setTimeout(() => openCategory('comida'), 1000);
+    };
+  </script>
 </body>
 </html>
