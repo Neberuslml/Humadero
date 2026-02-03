@@ -2,33 +2,33 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Humadero 🍔</title>
+  <title>Humadero 🍔 - Pedidos a domicilio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Estilos para el modal de login -->
   <style>
-    /* Estilos para el modal de login */
+    /* Estilos del modal de login */
     .login-modal {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.7);
-      z-index: 1000;
+      display: none;
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
     
     .login-container {
       background: white;
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 12px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
     
     .login-header {
@@ -38,12 +38,24 @@
       margin-bottom: 20px;
     }
     
+    .login-header h2 {
+      color: #e65100;
+      margin: 0;
+    }
+    
     .close-btn {
       background: none;
       border: none;
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
       color: #666;
+      line-height: 1;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .login-tabs {
@@ -54,16 +66,18 @@
     
     .tab-btn {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       border: none;
       background: none;
       cursor: pointer;
       font-size: 16px;
+      color: #666;
+      transition: all 0.3s;
     }
     
     .tab-btn.active {
-      border-bottom: 3px solid #ff9800;
       color: #ff9800;
+      border-bottom: 3px solid #ff9800;
       font-weight: bold;
     }
     
@@ -75,34 +89,48 @@
       display: block;
     }
     
-    .user-menu {
+    /* Barra de usuario */
+    .user-bar {
       position: absolute;
       top: 20px;
       right: 20px;
-    }
-    
-    .user-btn {
-      background: #ff9800;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 15px;
+    }
+    
+    .user-greeting {
+      color: white;
+      font-weight: bold;
+      display: none;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #ff9800, #e65100);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 18px;
     }
     
     .user-dropdown {
       display: none;
       position: absolute;
-      right: 0;
       top: 100%;
+      right: 0;
       background: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       border-radius: 8px;
-      min-width: 150px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      min-width: 180px;
       z-index: 100;
+      overflow: hidden;
+      margin-top: 10px;
     }
     
     .user-dropdown.show {
@@ -111,20 +139,46 @@
     
     .user-dropdown a {
       display: block;
-      padding: 10px 15px;
-      text-decoration: none;
+      padding: 12px 15px;
       color: #333;
+      text-decoration: none;
+      transition: background 0.3s;
+      border-bottom: 1px solid #f0f0f0;
     }
     
     .user-dropdown a:hover {
-      background: #f5f5f5;
+      background: #f9f9f9;
+      color: #ff9800;
     }
     
-    .auth-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 20px;
+    .user-dropdown a:last-child {
+      border-bottom: none;
+      color: #f44336;
+    }
+    
+    /* Clases para mostrar/ocultar según login */
+    .guest-only {
+      display: block;
+    }
+    
+    .user-only {
+      display: none;
+    }
+    
+    /* Animaciones */
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -132,159 +186,338 @@
 
   <!-- Modal de Login/Registro -->
   <div id="loginModal" class="login-modal">
-    <div class="login-container">
+    <div class="login-container" style="animation: fadeIn 0.3s ease-out;">
       <div class="login-header">
-        <h2 style="color: #e65100;">Acceso Humadero</h2>
-        <button class="close-btn" onclick="closeLogin()">×</button>
+        <h2>👤 Acceso Humadero</h2>
+        <button class="close-btn" onclick="closeLoginModal()">×</button>
       </div>
       
       <div class="login-tabs">
-        <button class="tab-btn active" onclick="openTab('login')">Iniciar Sesión</button>
-        <button class="tab-btn" onclick="openTab('register')">Registrarse</button>
+        <button class="tab-btn active" onclick="showLoginForm()">Iniciar Sesión</button>
+        <button class="tab-btn" onclick="showRegisterForm()">Registrarse</button>
       </div>
       
       <!-- Formulario de Login -->
-      <div id="loginTab" class="tab-content active">
-        <div id="loginMessage" style="color: red; margin-bottom: 10px;"></div>
-        <input type="email" id="loginEmail" placeholder="Correo electrónico" class="form-input">
-        <input type="password" id="loginPassword" placeholder="Contraseña" class="form-input">
-        <button onclick="login()" class="primary" style="width: 100%; margin-top: 15px;">
-          🔐 Entrar a mi cuenta
+      <form id="loginForm" class="tab-content active" onsubmit="handleLoginSubmit(event)">
+        <div id="loginMessage" style="color: red; margin-bottom: 10px; min-height: 20px;"></div>
+        
+        <input type="email" id="loginEmail" placeholder="Correo electrónico" 
+               class="form-input" required>
+        <input type="password" id="loginPassword" placeholder="Contraseña" 
+               class="form-input" required>
+        
+        <button type="submit" class="primary" style="width: 100%; padding: 14px; margin-top: 10px;">
+          🔐 Iniciar Sesión
         </button>
+        
         <p style="text-align: center; margin-top: 15px; font-size: 14px;">
-          <a href="#" style="color: #ff9800;">¿Olvidaste tu contraseña?</a>
+          <a href="#" onclick="showRegisterForm()" style="color: #ff9800; text-decoration: none;">
+            ¿No tienes cuenta? Regístrate
+          </a>
         </p>
-      </div>
+      </form>
       
       <!-- Formulario de Registro -->
-      <div id="registerTab" class="tab-content">
-        <div id="registerMessage" style="color: red; margin-bottom: 10px;"></div>
-        <input type="text" id="registerName" placeholder="Nombre completo" class="form-input">
-        <input type="email" id="registerEmail" placeholder="Correo electrónico" class="form-input">
-        <input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="form-input">
-        <input type="password" id="registerConfirm" placeholder="Confirmar contraseña" class="form-input">
-        <button onclick="register()" class="primary" style="width: 100%; margin-top: 15px; background: #4CAF50;">
-          📝 Crear cuenta nueva
+      <form id="registerForm" class="tab-content" onsubmit="handleRegisterSubmit(event)">
+        <div id="registerMessage" style="color: red; margin-bottom: 10px; min-height: 20px;"></div>
+        
+        <input type="text" id="registerName" placeholder="Nombre completo" 
+               class="form-input" required>
+        <input type="email" id="registerEmail" placeholder="Correo electrónico" 
+               class="form-input" required>
+        <input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" 
+               class="form-input" required minlength="6">
+        <input type="password" id="registerConfirm" placeholder="Confirmar contraseña" 
+               class="form-input" required>
+        
+        <button type="submit" class="primary" 
+                style="width: 100%; padding: 14px; margin-top: 10px; background: #4CAF50;">
+          📝 Crear Cuenta
         </button>
-      </div>
+        
+        <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+          <a href="#" onclick="showLoginForm()" style="color: #ff9800; text-decoration: none;">
+            ¿Ya tienes cuenta? Inicia sesión
+          </a>
+        </p>
+      </form>
     </div>
   </div>
 
-  <!-- Menú de Usuario (aparece cuando está logueado) -->
-  <div class="user-menu">
-    <div id="guestButtons" class="auth-buttons">
-      <button onclick="openLogin()" class="primary">👤 Iniciar Sesión</button>
-      <a href="menu.html">
-        <button class="primary" style="background: #666;">🍔 Ver Menú</button>
-      </a>
+  <!-- Barra de usuario -->
+  <div class="user-bar">
+    <!-- Mostrar cuando NO está logueado -->
+    <div class="guest-only">
+      <button onclick="openLoginModal()" class="primary" style="padding: 10px 20px;">
+        👤 Iniciar Sesión
+      </button>
     </div>
     
-    <div id="userInfo" style="display: none;">
-      <button class="user-btn" onclick="toggleUserMenu()">
-        <span id="userInitial">U</span>
-        <span id="userName">Usuario</span>
-      </button>
-      <div id="userDropdown" class="user-dropdown">
-        <a href="profile.html">👤 Mi Perfil</a>
-        <a href="orders.html">📦 Mis Pedidos</a>
-        <a href="#" onclick="logout()">🚪 Cerrar Sesión</a>
+    <!-- Mostrar cuando SÍ está logueado -->
+    <div class="user-only">
+      <div style="display: flex; align-items: center; gap: 10px; position: relative;">
+        <span class="user-greeting">Hola, <span id="userNameDisplay">Usuario</span></span>
+        <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar">
+          U
+        </div>
+        <div id="userDropdown" class="user-dropdown">
+          <a href="profile.html">👤 Mi Perfil</a>
+          <a href="orders.html">📦 Mis Pedidos</a>
+          <a href="#" onclick="logout()">🚪 Cerrar Sesión</a>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Encabezado principal -->
   <header>
     <h1>🔥 Humadero</h1>
-    <p>Pedidos en línea</p>
+    <p>Pedidos a domicilio - Rápido y delicioso</p>
   </header>
 
+  <!-- Contenido principal -->
   <main>
     <section class="welcome">
-      <h2>Bienvenido</h2>
-      <p>Ordena tu comida favorita en minutos</p>
-
+      <h2>Bienvenido a Humadero</h2>
+      <p>Ordena tu comida favorita y recíbela en minutos</p>
+      
+      <!-- Botones según estado de login -->
       <div class="auth-buttons">
-        <button onclick="openLogin()" class="primary" style="padding: 12px 24px;">
-          👤 Iniciar Sesión
-        </button>
-        <a href="menu.html">
-          <button class="primary" style="padding: 12px 24px; background: #e65100;">
-            🍔 Ver Menú
+        <div class="guest-only">
+          <button onclick="openLoginModal()" class="primary">
+            👤 Iniciar Sesión
           </button>
-        </a>
-        <button onclick="openLogin('register')" class="primary" style="padding: 12px 24px; background: #4CAF50;">
-          📝 Registrarse
-        </button>
+          <a href="menu.html">
+            <button class="primary" style="background: #e65100;">
+              🍔 Ver Menú
+            </button>
+          </a>
+          <button onclick="openRegisterModal()" class="primary" style="background: #4CAF50;">
+            📝 Registrarse
+          </button>
+        </div>
+        
+        <div class="user-only" style="display: none;">
+          <a href="menu.html">
+            <button class="primary">
+              🍔 Hacer Pedido
+            </button>
+          </a>
+          <a href="profile.html">
+            <button class="primary" style="background: #666;">
+              👤 Mi Perfil
+            </button>
+          </a>
+          <button onclick="logout()" class="primary" style="background: #f44336;">
+            🚪 Cerrar Sesión
+          </button>
+        </div>
       </div>
     </section>
     
-    <!-- Sección adicional para usuarios no logueados -->
-    <section id="guestFeatures" style="margin-top: 40px; padding: 20px; background: #fff8e1; border-radius: 10px;">
+    <!-- Características -->
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>Envío Rápido</h3>
+        <p>Recibe tu pedido en 30-45 minutos</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Precios Bajos</h3>
+        <p>La mejor relación calidad-precio</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🍔</div>
+        <h3>Comida Fresca</h3>
+        <p>Preparada al momento de tu pedido</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Fácil de Usar</h3>
+        <p>Ordena en 3 clics desde tu celular</p>
+      </div>
+    </section>
+    
+    <!-- Ventajas de registrarse (solo para guests) -->
+    <section class="benefits guest-only">
       <h3>✨ Ventajas de tener una cuenta:</h3>
-      <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
-        <li>📦 Historial de tus pedidos anteriores</li>
-        <li>⚡ Checkout más rápido</li>
-        <li>🎁 Descuentos exclusivos</li>
-        <li>📍 Guardar direcciones favoritas</li>
-        <li>🔔 Notificaciones de tus pedidos</li>
+      <ul>
+        <li>✅ Historial de todos tus pedidos</li>
+        <li>✅ Checkout más rápido</li>
+        <li>✅ Descuentos exclusivos</li>
+        <li>✅ Direcciones guardadas</li>
+        <li>✅ Seguimiento en tiempo real</li>
       </ul>
+    </section>
+    
+    <!-- Pedidos recientes (solo para usuarios logueados) -->
+    <section class="recent-orders user-only" style="display: none;">
+      <h3>📦 Tus pedidos recientes</h3>
+      <div id="recentOrders">
+        <p>Cargando tus pedidos...</p>
+      </div>
     </section>
   </main>
 
+  <!-- Pie de página -->
   <footer>
-    <p>© 2026 Humadero</p>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>🍔 Humadero</h4>
+        <p>Los mejores tacos y antojitos mexicanos</p>
+      </div>
+      
+      <div class="footer-section">
+        <h4>📞 Contacto</h4>
+        <p>Tel: 55 1234 5678</p>
+        <p>Email: pedidos@humadero.com</p>
+      </div>
+      
+      <div class="footer-section">
+        <h4>🕒 Horarios</h4>
+        <p>Lunes a Domingo</p>
+        <p>10:00 AM - 11:00 PM</p>
+      </div>
+      
+      <div class="footer-section">
+        <h4>🔗 Enlaces</h4>
+        <a href="menu.html">🍽️ Menú</a>
+        <a href="cart.html">🛒 Carrito</a>
+        <a href="profile.html">👤 Perfil</a>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>© 2026 Humadero - Todos los derechos reservados</p>
+      <p>
+        <a href="#" style="color: #ff9800; margin: 0 10px;">Términos</a> | 
+        <a href="#" style="color: #ff9800; margin: 0 10px;">Privacidad</a>
+      </p>
+    </div>
   </footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  
   <script>
-    // Configuración básica - reemplaza con tus credenciales
+    // Configuración de Supabase - REEMPLAZA CON TUS CREDENCIALES
     const SUPABASE_URL = 'https://tu-proyecto.supabase.co';
-    const SUPABASE_ANON_KEY = 'tu-clave-publica';
+    const SUPABASE_ANON_KEY = 'tu-clave-anon-publica';
     
+    // Inicializar Supabase
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Verificar si hay sesión activa al cargar
+    // Estado global
+    let currentUser = null;
+    
+    // ========== INICIALIZACIÓN ==========
     document.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        showUserInfo(session.user);
-      }
+      console.log('🔧 Inicializando Humadero...');
+      
+      // Verificar sesión activa
+      await checkAuth();
+      
+      // Configurar eventos
+      setupEventListeners();
     });
     
-    // Funciones del modal
-    function openLogin(tab = 'login') {
+    // ========== AUTENTICACIÓN ==========
+    async function checkAuth() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          currentUser = session.user;
+          updateUIAfterLogin(currentUser);
+          loadRecentOrders();
+          console.log('✅ Usuario autenticado:', currentUser.email);
+        } else {
+          // Verificar localStorage como fallback
+          const savedUser = localStorage.getItem('humadero_user');
+          if (savedUser) {
+            const userData = JSON.parse(savedUser);
+            updateUIAfterLogin(userData);
+            console.log('✅ Usuario cargado desde localStorage');
+          } else {
+            updateUIAfterLogout();
+            console.log('👤 Modo invitado');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error verificando autenticación:', error);
+        updateUIAfterLogout();
+      }
+    }
+    
+    // ========== FUNCIONES DEL MODAL ==========
+    function openLoginModal() {
       document.getElementById('loginModal').style.display = 'flex';
-      openTab(tab);
+      showLoginForm();
     }
     
-    function closeLogin() {
+    function openRegisterModal() {
+      document.getElementById('loginModal').style.display = 'flex';
+      showRegisterForm();
+    }
+    
+    function closeLoginModal() {
       document.getElementById('loginModal').style.display = 'none';
-      clearMessages();
+      clearFormMessages();
+      resetForms();
     }
     
-    function openTab(tabName) {
+    function showLoginForm() {
       // Cambiar pestañas
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-      });
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
-      document.querySelector(`[onclick="openTab('${tabName}')"]`).classList.add('active');
-      document.getElementById(tabName + 'Tab').classList.add('active');
+      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+      document.getElementById('loginForm').classList.add('active');
       
-      clearMessages();
+      // Enfocar email
+      setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+      
+      clearFormMessages();
     }
     
-    function clearMessages() {
+    function showRegisterForm() {
+      // Cambiar pestañas
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+      document.getElementById('registerForm').classList.add('active');
+      
+      // Enfocar nombre
+      setTimeout(() => document.getElementById('registerName').focus(), 100);
+      
+      clearFormMessages();
+    }
+    
+    function clearFormMessages() {
       document.getElementById('loginMessage').textContent = '';
       document.getElementById('registerMessage').textContent = '';
     }
     
-    // Funciones de autenticación
-    async function login() {
+    function resetForms() {
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('registerName').value = '';
+      document.getElementById('registerEmail').value = '';
+      document.getElementById('registerPassword').value = '';
+      document.getElementById('registerConfirm').value = '';
+    }
+    
+    // ========== MANEJO DE FORMULARIOS ==========
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
       const message = document.getElementById('loginMessage');
@@ -306,9 +539,13 @@
         if (error) throw error;
         
         // Login exitoso
-        showUserInfo(data.user);
-        closeLogin();
-        alert('¡Bienvenido de nuevo!');
+        currentUser = data.user;
+        updateUIAfterLogin(currentUser);
+        closeLoginModal();
+        showNotification('✅ ¡Bienvenido de nuevo!', 'success');
+        
+        // Cargar pedidos recientes
+        loadRecentOrders();
         
       } catch (error) {
         message.textContent = 'Error: ' + error.message;
@@ -316,7 +553,9 @@
       }
     }
     
-    async function register() {
+    async function handleRegisterSubmit(event) {
+      event.preventDefault();
+      
       const name = document.getElementById('registerName').value;
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
@@ -328,13 +567,13 @@
         return;
       }
       
-      if (password !== confirm) {
-        message.textContent = 'Las contraseñas no coinciden';
+      if (password.length < 6) {
+        message.textContent = 'La contraseña debe tener al menos 6 caracteres';
         return;
       }
       
-      if (password.length < 6) {
-        message.textContent = 'La contraseña debe tener al menos 6 caracteres';
+      if (password !== confirm) {
+        message.textContent = 'Las contraseñas no coinciden';
         return;
       }
       
@@ -347,21 +586,34 @@
           password,
           options: {
             data: {
-              full_name: name
+              full_name: name,
+              created_at: new Date().toISOString()
             }
           }
         });
         
         if (error) throw error;
         
-        message.textContent = '¡Cuenta creada! Revisa tu email para confirmar.';
+        message.textContent = '✅ ¡Cuenta creada! Revisa tu email para confirmar.';
         message.style.color = 'green';
         
-        // Limpiar formulario después de 3 segundos
-        setTimeout(() => {
-          closeLogin();
-          alert('Cuenta creada exitosamente. Ya puedes iniciar sesión.');
-        }, 3000);
+        // Login automático si no requiere confirmación
+        if (data.user && !data.user.identities?.length === 0) {
+          setTimeout(async () => {
+            const loginResult = await supabase.auth.signInWithPassword({ email, password });
+            if (!loginResult.error) {
+              currentUser = loginResult.data.user;
+              updateUIAfterLogin(currentUser);
+              closeLoginModal();
+              showNotification('🎉 ¡Cuenta creada exitosamente!', 'success');
+            }
+          }, 2000);
+        } else {
+          setTimeout(() => {
+            closeLoginModal();
+            showNotification('📧 Revisa tu email para confirmar la cuenta', 'info');
+          }, 3000);
+        }
         
       } catch (error) {
         message.textContent = 'Error: ' + error.message;
@@ -369,73 +621,185 @@
       }
     }
     
+    // ========== LOGOUT ==========
     async function logout() {
-      await supabase.auth.signOut();
-      hideUserInfo();
-      alert('Sesión cerrada correctamente');
+      try {
+        const { error } = await supabase.auth.signOut();
+        
+        if (error) throw error;
+        
+        // Limpiar datos
+        currentUser = null;
+        localStorage.removeItem('humadero_user');
+        
+        // Actualizar UI
+        updateUIAfterLogout();
+        
+        showNotification('👋 Sesión cerrada correctamente', 'info');
+        
+      } catch (error) {
+        console.error('Error en logout:', error);
+        showNotification('❌ Error al cerrar sesión', 'error');
+      }
     }
     
-    // Mostrar/ocultar información del usuario
-    function showUserInfo(user) {
-      document.getElementById('guestButtons').style.display = 'none';
-      document.getElementById('guestFeatures').style.display = 'none';
-      document.getElementById('userInfo').style.display = 'block';
-      
-      const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+    // ========== ACTUALIZACIÓN DE UI ==========
+    function updateUIAfterLogin(user) {
+      const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuario';
       const userInitial = userName.charAt(0).toUpperCase();
       
-      document.getElementById('userName').textContent = userName;
-      document.getElementById('userInitial').textContent = userInitial;
+      // Mostrar elementos de usuario
+      document.querySelectorAll('.user-only').forEach(el => {
+        el.style.display = 'block';
+      });
       
-      // Cambiar botones principales
-      document.querySelector('.welcome .auth-buttons').innerHTML = `
-        <a href="menu.html">
-          <button class="primary" style="padding: 12px 24px;">
-            🍔 Hacer un Pedido
-          </button>
-        </a>
-        <a href="orders.html">
-          <button class="primary" style="padding: 12px 24px; background: #666;">
-            📦 Ver Mis Pedidos
-          </button>
-        </a>
-        <button onclick="logout()" class="primary" style="padding: 12px 24px; background: #f44336;">
-          🚪 Cerrar Sesión
-        </button>
-      `;
+      // Ocultar elementos de guest
+      document.querySelectorAll('.guest-only').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      // Actualizar nombre e inicial
+      document.getElementById('userNameDisplay').textContent = userName;
+      document.getElementById('userAvatar').textContent = userInitial;
+      
+      // Guardar en localStorage
+      localStorage.setItem('humadero_user', JSON.stringify({
+        id: user.id,
+        email: user.email,
+        nombre: userName,
+        initial: userInitial
+      }));
     }
     
-    function hideUserInfo() {
-      document.getElementById('guestButtons').style.display = 'block';
-      document.getElementById('guestFeatures').style.display = 'block';
-      document.getElementById('userInfo').style.display = 'none';
+    function updateUIAfterLogout() {
+      // Mostrar elementos de guest
+      document.querySelectorAll('.guest-only').forEach(el => {
+        el.style.display = 'block';
+      });
       
-      // Restaurar botones principales
-      document.querySelector('.welcome .auth-buttons').innerHTML = `
-        <button onclick="openLogin()" class="primary" style="padding: 12px 24px;">
-          👤 Iniciar Sesión
-        </button>
-        <a href="menu.html">
-          <button class="primary" style="padding: 12px 24px; background: #e65100;">
-            🍔 Ver Menú
-          </button>
-        </a>
-        <button onclick="openLogin('register')" class="primary" style="padding: 12px 24px; background: #4CAF50;">
-          📝 Registrarse
-        </button>
-      `;
+      // Ocultar elementos de usuario
+      document.querySelectorAll('.user-only').forEach(el => {
+        el.style.display = 'none';
+      });
     }
     
+    // ========== PEDIDOS RECIENTES ==========
+    async function loadRecentOrders() {
+      const container = document.getElementById('recentOrders');
+      if (!container) return;
+      
+      // Simular pedidos (en producción vendrían de tu API)
+      const orders = [
+        { id: 'PED-001', fecha: 'Hoy', total: 125, items: 3, estado: 'entregado' },
+        { id: 'PED-002', fecha: 'Ayer', total: 85, items: 2, estado: 'en camino' },
+        { id: 'PED-003', fecha: '02/02/2026', total: 150, items: 4, estado: 'entregado' }
+      ];
+      
+      if (orders.length === 0) {
+        container.innerHTML = '<p>No tienes pedidos recientes</p>';
+        return;
+      }
+      
+      container.innerHTML = orders.map(order => `
+        <div class="order-card">
+          <div class="order-header">
+            <strong>${order.id}</strong>
+            <span class="order-status ${order.estado}">${order.estado}</span>
+          </div>
+          <div class="order-details">
+            <span>📅 ${order.fecha}</span>
+            <span>🍽️ ${order.items} items</span>
+            <span>💰 $${order.total}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // ========== MENÚ DE USUARIO ==========
     function toggleUserMenu() {
-      document.getElementById('userDropdown').classList.toggle('show');
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.classList.toggle('show');
     }
     
     // Cerrar menú al hacer clic fuera
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.user-menu')) {
+      if (!e.target.closest('.user-bar')) {
         document.getElementById('userDropdown').classList.remove('show');
       }
     });
+    
+    // ========== NOTIFICACIONES ==========
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      
+      const colors = {
+        success: { bg: '#4CAF50', icon: '✅' },
+        error: { bg: '#f44336', icon: '❌' },
+        warning: { bg: '#ff9800', icon: '⚠️' },
+        info: { bg: '#2196F3', icon: 'ℹ️' }
+      };
+      
+      const style = colors[type] || colors.info;
+      
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${style.bg};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+        font-family: Arial, sans-serif;
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      `;
+      
+      notification.innerHTML = `
+        <span style="font-size: 20px;">${style.icon}</span>
+        <div>${message}</div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Auto-eliminar después de 5 segundos
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => notification.remove(), 300);
+      }, 5000);
+    }
+    
+    // ========== CONFIGURAR EVENTOS ==========
+    function setupEventListeners() {
+      // Cerrar modal al hacer clic fuera
+      document.getElementById('loginModal').addEventListener('click', (e) => {
+        if (e.target.id === 'loginModal') {
+          closeLoginModal();
+        }
+      });
+      
+      // Cerrar modal con ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeLoginModal();
+        }
+      });
+    }
+    
+    // ========== FUNCIONES GLOBALES ==========
+    window.openLoginModal = openLoginModal;
+    window.openRegisterModal = openRegisterModal;
+    window.closeLoginModal = closeLoginModal;
+    window.showLoginForm = showLoginForm;
+    window.showRegisterForm = showRegisterForm;
+    window.handleLoginSubmit = handleLoginSubmit;
+    window.handleRegisterSubmit = handleRegisterSubmit;
+    window.logout = logout;
+    window.toggleUserMenu = toggleUserMenu;
   </script>
 </body>
 </html>
