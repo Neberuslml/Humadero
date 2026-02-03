@@ -239,4 +239,17 @@
     async function logout() {
       const result = await window.auth.logout();
       if (result.success) {
-        window.location
+        window.location.href = 'index.html';
+      }
+    }
+    
+    function addAddress() {
+      alert('Funcionalidad de agregar dirección - Próximamente');
+    }
+    
+    function saveSettings() {
+      alert('Configuración guardada');
+    }
+  </script>
+</body>
+</html>
