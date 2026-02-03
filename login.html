@@ -2,22 +2,313 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Humadero - Login</title>
+  <title>Iniciar Sesión - Humadero</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+      color: #e65100;
+      margin-bottom: 10px;
+    }
+    
+    .login-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      color: #666;
+      transition: all 0.3s;
+    }
+    
+    .tab-btn.active {
+      color: #ff9800;
+      border-bottom: 3px solid #ff9800;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: bold;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border 0.3s;
+      box-sizing: border-box;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #ff9800;
+      box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
+    }
+    
+    .form-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff9800, #e65100);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+    }
+    
+    .form-submit.register {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    }
+    
+    .form-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .form-links a {
+      color: #ff9800;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .form-links a:hover {
+      text-decoration: underline;
+    }
+    
+    .guest-info {
+      background: #fff8e1;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+      text-align: center;
+    }
+    
+    .guest-info a {
+      color: #e65100;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>Humadero</h1>
+  <header style="background: linear-gradient(135deg, #e65100, #ff9800); color: white; padding: 20px; text-align: center;">
+    <h1 style="margin: 0;">🔥 Humadero</h1>
+    <p style="margin: 5px 0 0 0;">Acceso a tu cuenta</p>
+  </header>
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Contraseña">
+  <main>
+    <div class="login-container">
+      <div class="login-header">
+        <h1>👤 Acceso</h1>
+        <p>Ingresa a tu cuenta o crea una nueva</p>
+      </div>
+      
+      <div class="login-tabs">
+        <button class="tab-btn active" onclick="switchTab('login')">Iniciar Sesión</button>
+        <button class="tab-btn" onclick="switchTab('register')">Registrarse</button>
+      </div>
+      
+      <!-- Formulario de Login -->
+      <form id="loginForm" class="tab-content active" onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-group">
+          <label for="loginEmail">Correo electrónico</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="tucorreo@ejemplo.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Tu contraseña" required>
+        </div>
+        
+        <button type="submit" class="form-submit">
+          🔐 Iniciar Sesión
+        </button>
+        
+        <div class="form-links">
+          <a href="#" onclick="switchTab('register')">¿No tienes cuenta? Regístrate</a>
+        </div>
+      </form>
+      
+      <!-- Formulario de Registro -->
+      <form id="registerForm" class="tab-content" onsubmit="event.preventDefault(); handleRegister();">
+        <div class="form-group">
+          <label for="registerName">Nombre completo</label>
+          <input type="text" id="registerName" class="form-input" placeholder="Tu nombre completo" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerEmail">Correo electrónico</label>
+          <input type="email" id="registerEmail" class="form-input" placeholder="tucorreo@ejemplo.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerPassword">Contraseña</label>
+          <input type="password" id="registerPassword" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <label for="registerConfirm">Confirmar contraseña</label>
+          <input type="password" id="registerConfirm" class="form-input" placeholder="Repite tu contraseña" required>
+        </div>
+        
+        <button type="submit" class="form-submit register">
+          📝 Crear Cuenta
+        </button>
+        
+        <div class="form-links">
+          <a href="#" onclick="switchTab('login')">¿Ya tienes cuenta? Inicia sesión</a>
+        </div>
+      </form>
+      
+      <div class="guest-info">
+        <p>¿Prefieres ordenar como invitado?</p>
+        <a href="menu.html">🍔 Continuar sin cuenta</a>
+      </div>
+    </div>
+  </main>
 
-  <button onclick="login()">Entrar</button>
+  <footer style="text-align: center; padding: 20px; color: #666;">
+    <p>© 2026 Humadero - <a href="index.html" style="color: #ff9800;">Volver al inicio</a></p>
+  </footer>
 
-  <p id="msg"></p>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="js/supabase.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/auth.js"></script>
+  
+  <script>
+    // Variables globales
+    let currentTab = 'login';
+    
+    // Funciones específicas para login.html
+    function switchTab(tabName) {
+      currentTab = tabName;
+      
+      // Cambiar pestañas activas
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Activar nueva pestaña
+      document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+      document.getElementById(tabName + 'Form').classList.add('active');
+      
+      // Enfocar primer campo
+      setTimeout(() => {
+        const firstInput = document.getElementById(tabName + (tabName === 'login' ? 'Email' : 'Name'));
+        if (firstInput) firstInput.focus();
+      }, 100);
+    }
+    
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        alert('Por favor completa todos los campos');
+        return;
+      }
+      
+      const result = await window.auth.login(email, password);
+      
+      if (result.success) {
+        // Redirigir al menú después de login exitoso
+        setTimeout(() => {
+          window.location.href = 'menu.html';
+        }, 1500);
+      }
+    }
+    
+    async function handleRegister() {
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirm = document.getElementById('registerConfirm').value;
+      
+      // Validaciones
+      if (!name || !email || !password || !confirm) {
+        alert('Por favor completa todos los campos');
+        return;
+      }
+      
+      if (password.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+      
+      if (password !== confirm) {
+        alert('Las contraseñas no coinciden');
+        return;
+      }
+      
+      const result = await window.auth.register(name, email, password);
+      
+      if (result.success) {
+        if (!result.requiresConfirmation) {
+          // Redirigir al menú después de registro exitoso
+          setTimeout(() => {
+            window.location.href = 'menu.html';
+          }, 1500);
+        }
+      }
+    }
+    
+    // Verificar si ya está logueado
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = window.auth.getCurrentUser();
+      if (user) {
+        // Si ya está logueado, redirigir al menú
+        window.location.href = 'menu.html';
+      }
+    });
+  </script>
 </body>
 </html>
