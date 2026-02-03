@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mi Perfil - Humadero</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .profile-container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #ff9800, #e65100);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: bold;
+    }
+    
+    .profile-info h1 {
+      color: #e65100;
+      margin: 0 0 5px 0;
+    }
+    
+    .profile-email {
+      color: #666;
+      margin: 0;
+    }
+    
+    .profile-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .profile-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .profile-card h2 {
+      color: #333;
+      margin-top: 0;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #ff9800;
+    }
+    
+    .order-item {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border-left: 4px solid #ff9800;
+    }
+    
+    .address-item {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .btn-logout {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+    
+    .btn-logout:hover {
+      background: #d32f2f;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <header style="background: linear-gradient(135deg, #e65100, #ff9800); color: white; padding: 20px;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <h1 style="margin: 0;">👤 Mi Perfil</h1>
+      <nav>
+        <a href="index.html" style="color: white; margin: 0 10px;">🏠 Inicio</a>
+        <a href="menu.html" style="color: white; margin: 0 10px;">🍔 Menú</a>
+        <a href="cart.html" style="color: white; margin: 0 10px;">🛒 Carrito</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="profile-container">
+    <div id="profileContent">
+      <!-- El contenido se cargará con JavaScript -->
+      <div style="text-align: center; padding: 50px;">
+        <div class="profile-avatar" style="margin: 0 auto 20px auto;">U</div>
+        <p>Cargando información del perfil...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align: center; padding: 20px; color: #666;">
+    <p>© 2026 Humadero - Sistema de pedidos en línea</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Verificar autenticación
+      const authResult = await window.auth.checkAuth();
+      
+      if (!authResult.isAuthenticated) {
+        // Redirigir a login si no está autenticado
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Cargar información del perfil
+      loadProfile(authResult.user);
+    });
+    
+    function loadProfile(user) {
+      const userName = user.nombre || user.email.split('@')[0];
+      const userInitial = userName.charAt(0).toUpperCase();
+      const userEmail = user.email || 'No disponible';
+      
+      const profileHTML = `
+        <div class="profile-header">
+          <div class="profile-avatar">${userInitial}</div>
+          <div class="profile-info">
+            <h1>${userName}</h1>
+            <p class="profile-email">${userEmail}</p>
+            <p>Miembro desde: ${new Date().toLocaleDateString('es-MX')}</p>
+          </div>
+        </div>
+        
+        <div class="profile-sections">
+          <div class="profile-card">
+            <h2>📦 Mis Pedidos Recientes</h2>
+            <div class="order-item">
+              <strong>Pedido #PED-001</strong>
+              <p>Fecha: ${new Date().toLocaleDateString('es-MX')}</p>
+              <p>Total: $125.00</p>
+              <p>Estado: ✅ Entregado</p>
+            </div>
+            <div class="order-item">
+              <strong>Pedido #PED-002</strong>
+              <p>Fecha: ${new Date(Date.now() - 86400000).toLocaleDateString('es-MX')}</p>
+              <p>Total: $85.00</p>
+              <p>Estado: 🚚 En camino</p>
+            </div>
+            <a href="orders.html" style="color: #ff9800; text-decoration: none; display: inline-block; margin-top: 10px;">
+              Ver todos los pedidos →
+            </a>
+          </div>
+          
+          <div class="profile-card">
+            <h2>📍 Mis Direcciones</h2>
+            <div class="address-item">
+              <strong>🏠 Casa</strong>
+              <p>Calle Principal #123, Colonia Centro</p>
+              <p>Ciudad de México, CDMX</p>
+              <p>Tel: 55 1234 5678</p>
+            </div>
+            <div class="address-item">
+              <strong>🏢 Oficina</strong>
+              <p>Av. Reforma #456, Piso 8</p>
+              <p>Ciudad de México, CDMX</p>
+              <p>Tel: 55 8765 4321</p>
+            </div>
+            <button onclick="addAddress()" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px;">
+              + Agregar dirección
+            </button>
+          </div>
+          
+          <div class="profile-card">
+            <h2>⚙️ Configuración</h2>
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: bold;">Notificaciones</label>
+              <label style="display: flex; align-items: center; gap: 10px; margin: 5px 0;">
+                <input type="checkbox" checked> Estado de pedidos
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; margin: 5px 0;">
+                <input type="checkbox" checked> Ofertas especiales
+              </label>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: bold;">Preferencias</label>
+              <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                <option>Español</option>
+                <option>English</option>
+              </select>
+            </div>
+            
+            <button onclick="saveSettings()" style="background: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+              💾 Guardar cambios
+            </button>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+          <button onclick="logout()" class="btn-logout">
+            🚪 Cerrar Sesión
+          </button>
+        </div>
+      `;
+      
+      document.getElementById('profileContent').innerHTML = profileHTML;
+    }
+    
+    async function logout() {
+      const result = await window.auth.logout();
+      if (result.success) {
+        window.location
