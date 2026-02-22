@@ -304,7 +304,7 @@ function closeLoginModal() {
 /**
  * Manejar submit del formulario de login
  */
-async function handleLoginSubmit(event) {
+async function handleLogin(event) {
   if (event) event.preventDefault();
   
   const email = document.getElementById('loginEmail').value;
@@ -321,7 +321,7 @@ async function handleLoginSubmit(event) {
 /**
  * Manejar submit del formulario de registro
  */
-async function handleRegisterSubmit(event) {
+async function handleRegister(event) {
   if (event) event.preventDefault();
   
   const fullName = document.getElementById('registerName').value;
@@ -483,8 +483,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========== EXPORTAR FUNCIONES GLOBALES ==========
 
 window.auth = {
-  login: handleLoginSubmit,
-  register: handleRegisterSubmit,
+  login: handleLogin,
+  register: handleRegister,
   logout: logout,
   openLoginModal: openLoginModal,
   openRegisterModal: openRegisterModal,
@@ -494,3 +494,4 @@ window.auth = {
   getCurrentUser: getCurrentUser,
   checkAuth: checkAuth
 };
+
